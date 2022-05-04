@@ -18,4 +18,4 @@ Or use with `nodemon` for developing:
 npm start
 ```
 
-Enjoy :)
+Now open `http://localhost:3000` and enjoy :)
