@@ -1,0 +1,35 @@
+extends layout.pug
+
+block content
+    .container.py-3
+        h2.text-center= title
+
+        a.btn.btn-success.d-inline-flex(href='/documents/new')
+            i.material-icons add_circle
+            .ms-2 Создать документ
+        
+        .row.mt-3
+            if documents.length < 1
+                p Документов нет, вы можете создать новый
+            else
+                //- Выводим все документы
+                each document in documents
+                    .col.col-md-4.d-flex
+                        .card
+                            .card-header
+                                .row
+                                    .col-10(style="padding-top: 5px;")
+                                        = new Intl.DateTimeFormat('ru-RU', { dateStyle: 'full', timeStyle: 'short' }).format(document.timeCreated)
+                                    .col-2
+                                        .dropdown
+                                            a.btn.btn-sm.dropdown-toggle(href="#" role="button" data-bs-toggle="dropdown")
+                                                i.material-icons more_vert
+                                            ul.dropdown-menu
+                                                a.dropdown-item(href=`documents/edit/${document.id}`) Редактировать
+                                                form(method="POST" action=`/documents/${document.id}?_method=DELETE`)
+                                                    button.dropdown-item.text-danger Удалить
+
+                            .card-body
+                                h5.card-title= document.title
+                                p.card-text!= document.text.substr(0, 100) + '\u2026'
+                                a(href=`documents/${document.slug}`) Читать ⟶

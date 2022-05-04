@@ -1,0 +1,18 @@
+extends layout.pug
+
+block content
+  .container
+    h1= title
+
+    form(method='POST' action=`/documents/${document.id}?_method=PUT`)
+      .mb-3
+        label(for='title') Заголовок
+        input.form-control(type='text' name='title' required value=document.title)
+
+      .mb-3
+        label(for='text') Текст
+        textarea#tinymce.form-control(name='text' required)= document.text
+
+      .mb-3
+        a.btn.btn-warning(href="javascript:history.back()") Отмена
+        button.btn.btn-primary.ms-2(type='submit') Сохранить

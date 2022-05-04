@@ -1,0 +1,23 @@
+extends layout.pug
+
+block content
+    .container.p-5
+        .row
+            .col-2
+                a.rounded-pill.shadow.p-2.d-flex.text-decoration-none(href="/")
+                    i.material-icons arrow_left
+                    span Главная
+
+            .col-8
+                h2= document.title
+
+            .col-2
+                .dropdown
+                    a.btn.btn-sm.dropdown-toggle(href="#" role="button" data-bs-toggle="dropdown")
+                        i.material-icons more_vert
+                    ul.dropdown-menu
+                        a.dropdown-item(href=`edit/${document.id}`) Редактировать
+                        form(method="POST" action=`/documents/${document.id}?_method=DELETE`)
+                            button.dropdown-item.text-danger Удалить
+
+        p !{document.text}
