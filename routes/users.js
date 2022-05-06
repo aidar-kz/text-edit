@@ -38,7 +38,7 @@ router.get('/login', (req, res) => res.render('user-login'))
 router.post('/register', async (req, res, next) => {
     const user = await User.findOne({ email: req.body.email })
     if (user) {
-        return res.redirect('/register')
+        return res.redirect('/user/register')
     }
 
     const salt = crypto.randomBytes(16)

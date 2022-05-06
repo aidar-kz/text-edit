@@ -2,12 +2,17 @@ const express = require('express')
 const mongoose = require('mongoose')
 const methodOverride = require('method-override')
 const path = require('path')
+const session = require('express-session')
+const passport = require('passport')
+const MongoStore = require('connect-mongo')
 const sanitizeHtml = require('sanitize-html')
 const documentRouter = require('./routes/documents.js')
 const userRouter = require('./routes/users')
 const Document = require('./models/Document.js')
 
-mongoose.connect('mongodb://localhost/text-edit')
+const dbURL = 'mongodb://localhost/text-edit'
+
+mongoose.connect(dbURL)
     .then(mongoose => {
         const connection = mongoose.connections[0]
         const { host, port, name } = connection
@@ -21,6 +26,13 @@ app.set('view engine', '.pug')
 app.use(express.urlencoded({ extended: true }))
 app.use(methodOverride('_method'))
 app.use(express.static(path.join(__dirname, 'public')))
+app.use(session({
+    secret: 'secret cat',
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({ mongoUrl: dbURL })
+}))
+app.use(passport.authenticate('session'))
 
 app.listen(app.get('port'), () => {
     console.log(`Сервер прослушивает порт ${app.get('port')}`)
