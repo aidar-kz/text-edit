@@ -3,6 +3,7 @@ const passport = require('passport')
 const crypto = require('crypto')
 const LocalStrategy = require('passport-local')
 const router = express.Router()
+const User = require('../models/User')
 
 passport.use(new LocalStrategy({ usernameField: 'email' }, (email, password, done) => {
     User.findOne({ email }, (err, user) => {
@@ -19,7 +20,47 @@ passport.use(new LocalStrategy({ usernameField: 'email' }, (email, password, don
     })
 }))
 
+passport.serializeUser((user, done) => {
+    process.nextTick(() => {
+        return done(null, { id: user.id, email: user.email })
+    })
+})
+
+passport.deserializeUser((user, done) => {
+    process.nextTick(() => {
+        return done(null, user)
+    })
+})
+
 router.get('/register', (req, res) => res.render('user-register'))
 router.get('/login', (req, res) => res.render('user-login'))
+
+router.post('/register', async (req, res, next) => {
+    const user = await User.findOne({ email: req.body.email })
+    if (user) {
+        return res.redirect('/register')
+    }
+
+    const salt = crypto.randomBytes(16)
+    crypto.pbkdf2(req.body.password, salt, 310000, 32, 'sha256', (err, hashedPassword) => {
+        if (err) return next(err)
+
+        const user = new User({
+            firstname: req.body.firstname,
+            lastname: req.body.lastname,
+            email: req.body.email,
+            hashedPassword,
+            salt
+        })
+
+        user.save().then(user => {
+            req.login(user, err => {
+                if (err) return next(err)
+                res.redirect('/')
+            })
+        })
+            .catch(err => console.log(err))
+    })
+})
 
 module.exports = router
