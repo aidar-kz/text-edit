@@ -4,9 +4,10 @@ const methodOverride = require('method-override')
 const path = require('path')
 const sanitizeHtml = require('sanitize-html')
 const documentRouter = require('./routes/documents.js')
+const userRouter = require('./routes/users')
 const Document = require('./models/Document.js')
 
-mongoose.connect('mongodb://localhost/documents')
+mongoose.connect('mongodb://localhost/text-edit')
     .then(mongoose => {
         const connection = mongoose.connections[0]
         const { host, port, name } = connection
@@ -29,8 +30,12 @@ app.use('/bootstrap', express.static(__dirname + '/node_modules/bootstrap'))
 app.use('/material-icons', express.static(__dirname + '/node_modules/material-icons'))
 app.use('/tinymce', express.static(path.join(__dirname, '/node_modules/tinymce')))
 app.use('/documents', documentRouter)
+app.use('/user', userRouter)
 
 app.get('/', async (req, res) => {
+
+    if (!req.user) return res.render('user-login')
+
     const documents = await Document.find().sort({ timeCreated: 'desc' })
     documents.forEach(document => {
         document.text = sanitizeHtml(document.text)

@@ -1,0 +1,22 @@
+extends layout.pug
+
+block content
+    .col-3.mx-auto
+        h1 Вход
+
+        .card
+            .card-body
+                form(method='post' action='/user/login')
+                    .mb-3
+                        label(for='email') Эл. почта
+                        input.form-control(type='email' name='email' autocomplete='email' required autofocus)
+                    .mb-3
+                        label(for='password') Пароль
+                        input.form-control(type='password' name='password' autocomplete='password' required)
+                    .mb-3
+                        button.btn.btn-success(type='submit') Войти
+                
+                hr
+
+                p Нет учетной записи? <a href='/user/register'>Регистрация</a>
+                
