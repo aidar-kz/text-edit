@@ -55,7 +55,7 @@ app.use('/user', userRouter)
 app.get('/', async (req, res) => {
     if (!req.user) return res.render('user-login')
     const user = await User.findOne({ email: req.user.email })
-    const documents = await Document.find().sort({ timeCreated: 'desc' })
+    const documents = await Document.find({ userId: req.user.id }).sort({ timeCreated: 'desc' })
     documents.forEach(document => document.text = sanitizeHtml(document.text))
     res.render('index', { user, documents, title: 'Все документы' })
 })

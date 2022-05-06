@@ -9,7 +9,8 @@ router.get('/new', (req, res) => {
 router.post('/', (req, res) => {
   const document = new Document({
     title: req.body.title,
-    text: req.body.text
+    text: req.body.text,
+    userId: req.user.id
   })
 
   document.save()
