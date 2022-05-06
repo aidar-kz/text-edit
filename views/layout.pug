@@ -8,5 +8,9 @@ html
     script(src="/tinymce/tinymce.min.js")
     script(src="/js/tinymce.config.js")
   body
+    include header.pug
+    if hasMessages
+      each message in messages
+        .container.alert.alert-danger(role='alert')= message
     block content
     script(src="/bootstrap/dist/js/bootstrap.bundle.min.js")

@@ -38,6 +38,7 @@ router.get('/login', (req, res) => res.render('user-login'))
 router.post('/register', async (req, res, next) => {
     const user = await User.findOne({ email: req.body.email })
     if (user) {
+        req.session.messages.push('Пользователь с таким email уже зарегистрирован')
         return res.redirect('/user/register')
     }
 
@@ -61,6 +62,17 @@ router.post('/register', async (req, res, next) => {
         })
             .catch(err => console.log(err))
     })
+})
+
+router.post('/login', passport.authenticate('local', {
+    successRedirect: '/',
+    failureRedirect: '/user/login',
+    failureMessage: true
+}))
+
+router.post('/logout', (req, res) => {
+    req.logout()
+    res.redirect('/')
 })
 
 module.exports = router

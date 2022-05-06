@@ -1,0 +1,11 @@
+nav.navbar
+    .container
+        a.navbar-brand(href='/') Text-Edit App
+        if user
+            .d-flex.align-items-center
+                i.material-icons person
+                span= user.firstname
+                form.ms-2(method='post' action='/user/logout')
+                    button.btn.btn-flat.d-flex(type='submit')
+                        i.material-icons logout
+                        span Выйти

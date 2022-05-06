@@ -9,6 +9,7 @@ const sanitizeHtml = require('sanitize-html')
 const documentRouter = require('./routes/documents.js')
 const userRouter = require('./routes/users')
 const Document = require('./models/Document.js')
+const User = require('./models/User.js')
 
 const dbURL = 'mongodb://localhost/text-edit'
 
@@ -33,6 +34,13 @@ app.use(session({
     store: MongoStore.create({ mongoUrl: dbURL })
 }))
 app.use(passport.authenticate('session'))
+app.use((req, res, next) => {
+    const msgs = req.session.messages || []
+    res.locals.messages = msgs
+    res.locals.hasMessages = !!msgs.length
+    req.session.messages = []
+    next()
+})
 
 app.listen(app.get('port'), () => {
     console.log(`Сервер прослушивает порт ${app.get('port')}`)
@@ -45,13 +53,9 @@ app.use('/documents', documentRouter)
 app.use('/user', userRouter)
 
 app.get('/', async (req, res) => {
-
     if (!req.user) return res.render('user-login')
-
+    const user = await User.findOne({ email: req.user.email })
     const documents = await Document.find().sort({ timeCreated: 'desc' })
-    documents.forEach(document => {
-        document.text = sanitizeHtml(document.text)
-        console.log(sanitizeHtml(document.text))
-    })
-    res.render('index', { documents, title: 'Все документы' })
+    documents.forEach(document => document.text = sanitizeHtml(document.text))
+    res.render('index', { user, documents, title: 'Все документы' })
 })
